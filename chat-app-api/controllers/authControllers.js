@@ -23,7 +23,7 @@ exports.login = async (req,res) => {
 
         //check password match
         if (!bcrypt.compareSync(password, userinfo.password)) {
-            return res.status(404).json({error : 'wrong  password!'})
+            return res.status(404).json({error : 'wrong password!'})
         }
 
         //generate auth token
@@ -37,7 +37,7 @@ exports.login = async (req,res) => {
 }
 
 exports.register = async (req,res) => {
-    
+
     try {
         const userinfo = await user.create(req.body)
         const userWithToken = await generatToken(userinfo.dataValues);
