@@ -1,10 +1,22 @@
 import React from "react";
 import loginImage from '../../assets/images/login.svg';
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import authServices from "../../services/authServices";
 
 import './login.scss'
 
 const Login = () => {
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const submitForm = (e) => {
+        e.preventDefault()
+
+        //authServices.login({email, password}).then(res => console.log(res))
+    }
+
     return (
         <div className="auth-container">
             <div className="auth-card">
@@ -17,13 +29,23 @@ const Login = () => {
                         <h2>
                             welcome back
                         </h2>
-                        <form>
+                        <form onSubmit={submitForm}>
                             <div className="input-field mb-1">
-                                <input type="email" placeholder="Email"/>
-                            </div>
+                                <input 
+                                    onChange = {e => setEmail(e.target.value)}
+                                    value = {email}
+                                    required = 'required'
+                                    type="email" 
+                                    placeholder="Email"/>
+                                </div>
 
                             <div className="input-field mb-2">
-                                <input type="password" placeholder="password"/>
+                                <input
+                                    onChange = {e => setPassword(e.target.value)}
+                                    value = {password}
+                                    required = 'required'
+                                    type="password" 
+                                    placeholder="password"/>
                             </div>
 
                             <button>LOGIN</button>
