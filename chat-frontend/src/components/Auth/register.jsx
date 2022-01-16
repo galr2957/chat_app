@@ -1,11 +1,30 @@
-import React from "react";
+import React, {useState} from "react";
 import registerImage from '../../assets/images/register.svg';
-import { Link } from "react-router-dom";
+import { Link , useNavigate} from "react-router-dom";
+import { useDispatch } from "react-redux";
+import {Register as registerAuth} from "../../store/actions/auth";
+
 
 
 import './register.scss'
 
 const Register = () => {
+
+    const dispatch =useDispatch()
+    const navigate = useNavigate()
+
+    const [firstName, setFirstNme] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('');
+    const [gender, setGender] = useState('MALE');
+
+    const submitForm = (e) => {
+        e.preventDefault()
+        registerAuth({firstName, lastName, email, password,gender}, dispatch)
+                 .then(() => navigate('/'))
+    }
+
     return (
         <div className="auth-container">
             <div className="auth-card">
@@ -18,28 +37,51 @@ const Register = () => {
                         <h2>
                             create an acount
                         </h2>
-                        <form>
+                        <form onSubmit={submitForm}>
                             <div className="input-field mb-1">
-                                <input type="email" placeholder="first name"/>
+                            <input 
+                                    onChange = {e => setFirstNme(e.target.value)}
+                                    value = {firstName}
+                                    required = 'required'
+                                    type="text" 
+                                    placeholder="FIRST NAME"/>
                             </div>
 
                             <div className="input-field mb-1">
-                                <input type="email" placeholder="last name"/>
+                                <input 
+                                     type="text" 
+                                     placeholder="LAST NAME"
+                                     required = 'required'
+                                     onChange = {e => setLastName(e.target.value)}
+                                     value = {lastName}  />
                             </div>
 
                             <div className="input-field mb-1">
-                                <input type="email" placeholder="Email"/>
+                                <input  
+                                   onChange = {e => setEmail(e.target.value)}
+                                    value = {email}
+                                    required = 'required'
+                                    type="email" 
+                                    placeholder="Email"/>
                             </div>
 
                             <div className="input-field mb-1">
-                                <select placeholder="gender">
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
+                                <select 
+                                    placeholder="gender"
+                                    onChange = {e => setGender(e.target.value)}
+                                    value = {gender}
+                                    required = 'required'>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
                                 </select>
                             </div>
 
                             <div className="input-field mb-2">
-                                <input type="password" placeholder="password"/>
+                                <input 
+                                    type="password" 
+                                    placeholder="PASSWORD"
+                                    onChange = {e => setPassword(e.target.value)}
+                                    required = 'required'/>
                             </div>
 
                             <button>REGISTER</button>

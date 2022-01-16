@@ -1,12 +1,15 @@
 import React from "react";
 import loginImage from '../../assets/images/login.svg';
-import { Link } from "react-router-dom";
+import { Link, useNavigate} from "react-router-dom";
 import { useState } from "react";
-import authServices from "../../services/authServices";
+import {Login as loginauth} from "../../store/actions/auth";
+import { useDispatch } from "react-redux";
 
 import './login.scss'
 
-const Login = () => {
+const Login = ({history}) => {
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -14,7 +17,8 @@ const Login = () => {
     const submitForm = (e) => {
         e.preventDefault()
 
-        //authServices.login({email, password}).then(res => console.log(res))
+        loginauth({email, password}, dispatch)
+                 .then(() => navigate('/'))
     }
 
     return (
