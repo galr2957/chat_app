@@ -1,11 +1,11 @@
-const { user, user } = require('pg/lib/defaults');
 const models = require('../models');
 const User = models.user;
 const Chat = models.Chat;
 const ChatUser = models.ChatUser;
 const Message = models.Message;
 const {Op} = require('sequelize');
-const { Sequelize } = require('../models');
+const { sequelize } = require('../models');
+const e = require('express');
 
 exports.index = async (req,res) => {
      
@@ -37,12 +37,13 @@ exports.index = async (req,res) => {
     })
  
  
-    return res.send(user.Chats)
+    return res.json(user.Chats)
 }
 
 exports.create = async (req, res) => {
+
     const {partnerId}  = req.body
-    const t = await Sequelize.transaction()
+    const t = await sequelize.transaction()
 
     try {
         const user = await User.findOne ({
@@ -66,9 +67,8 @@ exports.create = async (req, res) => {
 
                 }
             ]
-        }
-            
-        )
+        })
+        
         if (user && user.Chats.length >0) {
             return res.status(403).json({status:'Error', message: 'chat with this user already exists'})
         }
@@ -84,7 +84,81 @@ exports.create = async (req, res) => {
                 userId: partnerId
             }
         ], {transaction: t})
+
+        await t.commit()
+
+        const chatNew = await Chat.findOne({
+            where: {
+                id: chat.id
+            },
+            include: [
+                {
+                    model:User,
+                    where: {
+                        [Op.not] : {
+                            id:req.user.id
+                        }
+                    }
+                },
+                {
+                    model: Message
+                }
+            ]
+        }) 
+       
+
+        return res.json(chatNew)
     } catch (e) {
+        await t.rollback();
+        return res.status(500).json({status:'Error', message: e.message})
+    }
+}
+
+exports.messages = async (req, res) => {
+    
+    const limit = 10
+    const page = req.query.page || 1
+    const offset = page > 1 ? page * limit : 0
+
+    const messages = await Message.findAndCountAll ({
+        where : {
+            chatId: req.query.id
+        },
+        limit,
+        offset
+    })
+
+    const totalpages = Math.ceil(messages.count / limit)
+
+    if (page > totalpages) return res.json({data: {messages: [] } })
+
+    const result = {
+        messages: messages.rows,
+        pagination : {
+            page,
+            totalpages
+        }
+    }
+    return res.json(result)
+}
+
+exports.deleteChat = async (req, res) => {
+    try {
+        if (!await Chat.findOne ({
+            where: {
+                id: req.params.id
+            }
+           })) {
+                throw 'chat not found' }
+        await Chat.destroy ({
+            where: {
+                id: req.params.id
+            }
+        })
+
+        return res.json({status: 'succes', message: `chat ${req.params.id} was deleted :(`})
+    } catch (e) {
+        return res.status(500).json({status: 'Error', message: `can't delete chat ${req.params.id}`})
 
     }
 }
