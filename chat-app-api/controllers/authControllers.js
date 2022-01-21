@@ -1,3 +1,5 @@
+const config = require ('../config/app')
+
 const user = require('../models').user
 
 const bcrypt = require('bcrypt')
@@ -5,6 +7,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 const {app_key} = require('../config/app')
+
 
 exports.login = async (req,res) => {
     const {email, password} = req.body;
@@ -18,20 +21,30 @@ exports.login = async (req,res) => {
             } 
         })
         if (!userinfo) {
-            return res.status(404).json({error : 'wrong email and/or password!'})
+            return res.status(401).json({error : 'wrong email and/or password!'})
         }
 
         //check password match
         if (!bcrypt.compareSync(password, userinfo.password)) {
-            return res.status(404).json({error : 'wrong password!'})
+            console.log('wrong password');
+            return res.status(401).json({error : 'wrong password!'}) 
         }
 
         //generate auth token
         const userWithToken = generatToken(userinfo.dataValues);
+
+        if (userWithToken.avatar.split('-')[0] == 'avatar') {
+            const url = `${config.app_url}:${config.app_port}`
+            const avatarFileName = userWithToken.avatar
+            const id = userWithToken.id
+
+            userWithToken.avatar = `${url}/user/${id}/${avatarFileName}`
+        }
+
         return res.send(userWithToken);
 
     } catch (e) {
-        return res.status(500).json({message : e.message})
+        return res.status(500).json({message : 'wrong email and/or password'})
         
     }
 }
@@ -39,7 +52,9 @@ exports.login = async (req,res) => {
 exports.register = async (req,res) => {
 
     try {
-        const userinfo = await user.create(req.body)
+        const userData = req.body
+        userData.avatar = `${config.app_url}:${config.app_port}/${userData.gender}.svg`
+        const userinfo = await user.create(userData)
         const userWithToken = await generatToken(userinfo.dataValues);
         return res.send(userWithToken);
 

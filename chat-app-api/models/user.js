@@ -1,4 +1,5 @@
 'use strict';
+const config = require('../config/app')
 const bcrypt = require('bcrypt')
 
 const {
@@ -13,6 +14,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.belongsToMany(models.Chat, {through: 'ChatUser' , foreignKey: 'userId'})
+      this.hasMany(models.ChatUser, { foreignKey: 'userId'})
     }
   }
   user.init({
@@ -21,7 +24,20 @@ module.exports = (sequelize, DataTypes) => {
     email: DataTypes.STRING,
     password: DataTypes.STRING,
     gender: DataTypes.STRING,
-    avatar: DataTypes.STRING
+    avatar: {
+      type: DataTypes.STRING,
+      get : function() {
+        const avatar = this.getDataValue('avatar')
+        const url = `${config.app_url}:${config.app_port}`
+
+        if (!avatar) {
+          return `${url}/${this.getDataValue('gender')}.svg`
+        }
+
+        const id = this.getDataValue('id')
+        return `${url}/user/${id}/${avatar}`
+      }
+    }
   }, {
     sequelize,
     modelName: 'user',
@@ -40,3 +56,4 @@ const hashPassword = async (user) => {
   }
   return user
 }
+
