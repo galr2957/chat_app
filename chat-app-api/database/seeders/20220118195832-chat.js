@@ -19,17 +19,17 @@ module.exports = {
     */
 
      const chat = await Chat.create()   
-     const users = await User.findAll({ limit : 2})
+     //const users = await User.findAll({ limit : 2})
          
 
          await ChatUser.bulkCreate([
            {
              chatId: chat.id,
-             userId: users[0].id
+             userId: 55
            },
            {
             chatId: chat.id,
-            userId: users[1].id
+            userId: 4
            }
          ])
 
@@ -37,17 +37,17 @@ module.exports = {
            {
              message: 'hello friend',
              chatId: chat.id,
-             fromUserId: users[0].id
+             fromUserId: 55
            },
            {
             message: 'hello body',
             chatId: chat.id,
-            fromUserId: users[1].id
+            fromUserId: 55
           },
           {
             message: 'hello sir long time no speak',
             chatId: chat.id,
-            fromUserId: users[1].id
+            fromUserId: 4
           }
          ])
   },

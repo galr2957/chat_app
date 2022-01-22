@@ -8,7 +8,6 @@ const { sequelize } = require('../models');
 const e = require('express');
 
 exports.index = async (req,res) => {
-     
     const user = await User.findOne ({
         where: {
             id: req.user.id
@@ -27,6 +26,11 @@ exports.index = async (req,res) => {
                     },
                     {
                         model:Message,
+                        include : [
+                            {
+                                model: User
+                            }
+                        ],
                         limit: 20,
                         order:[['id', 'DESC']] 
                     }
@@ -64,7 +68,6 @@ exports.create = async (req, res) => {
                             }
                         }
                     ]
-
                 }
             ]
         })
@@ -124,6 +127,11 @@ exports.messages = async (req, res) => {
         where : {
             chatId: req.query.id
         },
+        include : [
+            {
+                model: User
+            }
+        ],
         limit,
         offset
     })
