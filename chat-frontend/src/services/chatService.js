@@ -1,3 +1,4 @@
+import { upload } from '@testing-library/user-event/dist/upload'
 import API from'./api'
 
 const ChatService = {
@@ -9,6 +10,20 @@ const ChatService = {
              .catch (err => {
                  throw err
              })
+    },
+
+    uploadImage : (data) => {
+        const headers = {
+            headers: {'content-type' : 'application/x-www-form-urlencoded'}
+       }
+        return API.post('/chats/upload-image', data, headers)
+             .then(({data}) => {
+                 return data
+             })
+             .catch (err => {
+                 throw err
+             })
+
     }
 }
 
