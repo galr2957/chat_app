@@ -1,6 +1,7 @@
 
 const socketIo = require('socket.io');
 const { sequelize } = require('../models');
+const config = require('../config/app')
 const Message = require('../models').Message
 
 const users = new Map()
@@ -79,15 +80,20 @@ const SocketServer = (server) => {
                     message: message.message
 
                 }
+                
 
                 const savedMessage = await Message.create(msg)
-
                 message.user = message.fromUser
                 message.fromUserId = message.fromUser.id
-                message.id = savedMessage.id
+                if (message.type === 'image') {
+                    message.message = `http://${config.app_url}:${config.app_port}/chat/${message.fromUser.id}/${message.message}`
+
+                }
+                
                 delete message.fromUser
 
                 sockets.forEach (socket => {
+                    
                     io.to(socket).emit('received', message)
                 })
             }
