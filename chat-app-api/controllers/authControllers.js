@@ -10,7 +10,7 @@ const {app_key} = require('../config/app')
 
 
 exports.login = async (req,res) => {
-    console.log("login ////////")
+   
     const {email, password} = req.body;
 
     try {
