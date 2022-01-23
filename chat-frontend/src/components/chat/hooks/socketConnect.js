@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import SocketIOClient from 'socket.io-client'
-import {fetchChats, onlineFriend, onlineFriends, offlineFriend, setSocket} from '../../../store/actions/chat'
+import { receviedMwssage, fetchChats, onlineFriend, onlineFriends, offlineFriend, setSocket} from '../../../store/actions/chat'
 
 function useSocket (user, dispatch) {
     useEffect(() => {
@@ -31,6 +31,10 @@ function useSocket (user, dispatch) {
                 socket.on('offline', (user) => {
                     console.log('offline' , user)
                     offlineFriend(dispatch, user)
+                })
+
+                socket.on('received', (message) => {
+                    receviedMwssage(dispatch, message, user.id)
                 })
 
             })

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect,useRef} from "react";
 import './MessageBox.scss'
 import Message from "../Chatheader/Message/Message";
 import { useSelector } from "react-redux";
@@ -6,9 +6,20 @@ import { useSelector } from "react-redux";
 const MessageBox = ({chat}) => {
 
     const user = useSelector(state => state.authReducer.user)
+    const msgBox = useRef(null)
+    const scrollBottom = useSelector(state => state.chatReducer.scrollBottom)
+
+    const scrollManual = (value) => {
+        msgBox.current.scrollTop= value
+    }
+
+    useEffect(() => {
+            scrollManual(msgBox.current.scrollHeight)
+        
+    }, [scrollBottom])
 
     return (
-        <div id="msg-box" >
+        <div id="msg-box" ref={msgBox} >
             {
                 chat.Messages.map((message, index) => {
                     return <Message

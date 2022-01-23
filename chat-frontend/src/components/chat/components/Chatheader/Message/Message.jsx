@@ -15,7 +15,7 @@ const Message = ({user, chat, index, message}) => {
             <div className={message.fromUserId === user.id ? 'owner' : 'other-person'}>
                 {
                     message.fromUserId !== user.id
-                    ? <h6 className="m-0"> {message.user.firstName} {message.user.lastName} </h6>
+                    ? <h6 className="m-0"> {message.user.firstName } {message.user.lastName} </h6>
                     :null
                 }
                {

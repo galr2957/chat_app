@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const MessageInput = ({chat}) => {
 
-    const [message, setMessage] = useState('')
+    const [message, setMessage] = useState('massage...')
     const [Image, setImage] = useState('')
     const user = useSelector(state => state.authReducer.user)
     const socket = useSelector(state => state.chatReducer.socket)
@@ -18,7 +18,8 @@ const MessageInput = ({chat}) => {
     }
 
     const handleKeyDown = (e, imageUpload) => {
-        if (e.Key === 'Enter') {
+       
+        if (e.key === 'Enter') {
             sendMessage(imageUpload)
         }
     }
@@ -28,8 +29,8 @@ const MessageInput = ({chat}) => {
 
         const msg = {
             type: imageUpload ? 'image' : 'text',
-            fromUserId: user.id,
-            toUserId: chat.User.map(user => user.id),
+            fromUser: user,
+            toUserId: chat.users.map(user => user.id),
             chatId: chat.id,
             message: imageUpload? Image : message
         }
@@ -37,7 +38,7 @@ const MessageInput = ({chat}) => {
         setMessage('')
         setImage('')
 
-        // SEND MESSAGE WITH SOCKET
+        socket.emit('message', msg)
     }
         
     return (
@@ -45,7 +46,8 @@ const MessageInput = ({chat}) => {
             <div id="message-input">
                 <input
                     type='text'
-                    placeholder = 'Message...'
+                    placeholder = {message}
+                    value={message}
                     onChange={e => handleMessage(e)}
                     onKeyDown={e => handleKeyDown(e, false)}
                 />

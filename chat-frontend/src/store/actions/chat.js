@@ -5,6 +5,7 @@ export const FRIENDS_ONLINE = 'FRIENDS_ONLINE'
 export const FRIEND_ONLINE = 'FRIEND_ONLINE'
 export const FRIEND_OFFLINE = 'FRIEND_OFFLINE'
 export const SET_SOCKET = 'SET_SOCKET'
+export const RECEVIED_MESSAGE = 'RECEVIED_MESSAGE'
 
 export const fetchChats = (dispatch) => {
     return ChatService.fetchChats()
@@ -41,4 +42,8 @@ export const offlineFriend = (dispatch,friend) => {
 
 export const setSocket = (dispatch,socket) => {
     dispatch({type: SET_SOCKET, payload: socket})
+}
+
+export const receviedMwssage = (dispatch,message, userId) => {
+    dispatch({type: RECEVIED_MESSAGE, payload: {message, userId}})
 }
