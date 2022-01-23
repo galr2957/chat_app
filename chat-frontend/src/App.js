@@ -5,6 +5,12 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Chat from './components/chat/chat';
 import ProtectedRoute from './components/router/protectedRoute';
 
+import { library } from '@fortawesome/fontawesome-svg-core'
+
+import {faSmile, faImage} from '@fortawesome/free-regular-svg-icons'
+import { faSpinner, faEllipsisV, faUserPlus, faSignOutAlt, faTrash, faCaretDown, faUpload, faTimes, faBell } from '@fortawesome/free-solid-svg-icons'
+library.add (faSpinner, faEllipsisV, faUserPlus, faSignOutAlt, faTrash, faSmile, faImage,  faCaretDown, faUpload, faTimes, faBell)
+
 function App() {
   return (
     
