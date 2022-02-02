@@ -146,24 +146,28 @@ const SocketServer = (server) => {
         })
 
         socket.on('add-friend', (chats) => {
+            console.log(users)
+            console.log(chats[0].users[0].id)
             try{
                 let online = 'offline'
-                if(users.has(chats[1].Users[0].id)) {
+                if(users.has(chats[0].users[0].id)) {
+                    console.log("reciver",chats[1])
                     online = 'online'
-                    chats[0].Users[0].status = 'online'
-                    users.get(chats[1].Users[0].id).sockets.forEach(socket => {
-                        io.to(socket).emit('new-chat', chats[0])
+                    chats[1].users[0].status = 'online'
+                    users.get(chats[0].users[0].id).sockets.forEach(socket => {
+                        io.to(socket).emit('new-chat', chats[1])
                     })
                 }
-                if(users.has(chats[0].Users[0].id)) {
-                    chats[1].Users[0].status = online
-                    users.get(chats[0].Users[0].id).sockets.forEach(socket => {
-                        io.to(socket).emit('new-chat', chats[1])
+                if(users.has(chats[1].users[0].id)) {
+                    console.log("creator",chats[0])
+                    chats[0].users[0].status = online
+                    users.get(chats[1].users[0].id).sockets.forEach(socket => {
+                        io.to(socket).emit('new-chat', chats[0])
                     })
                 }
             }
             catch (e) {
-                
+
             }
         }) 
         

@@ -40,7 +40,6 @@ exports.index = async (req,res) => {
         ]
     })
  
- 
     return res.json(user.Chats)
 }
 
@@ -89,33 +88,15 @@ exports.create = async (req, res) => {
         ], {transaction: t})
 
         await t.commit()
+        
 
-        // const chatNew = await Chat.findOne({
-        //     where: {
-        //         id: chat.id
-        //     },
-        //     include: [
-        //         {
-        //             model:User,
-        //             where: {
-        //                 [Op.not] : {
-        //                     id:req.user.id
-        //                 }
-        //             }
-        //         },
-        //         {
-        //             model: Message
-        //         }
-        //     ]
-        // }) 
-
-        const creator = await user.findOne ({
+        const creator = await User.findOne ({
             where: {
                 id: req.user.id
             }
         })
 
-        const partner = await user.findOne ({
+        const partner = await User.findOne ({
             where: {
                 id: partnerId
             }
@@ -124,20 +105,21 @@ exports.create = async (req, res) => {
         const forCreator = {
             id: chat.id,
             type: 'dual',
-            Users : [partner],
+            users : [partner],
             Messages: []
         }
        
         const forReciver = {
             id: chat.id,
             type: 'dual',
-            Users : [creator],
+            users : [creator],
             Messages: []
         }
 
-        return res.json(forCreator, forReciver)
+        return res.json([forCreator, forReciver])
     } catch (e) {
-        await t.rollback();
+        // await t.rollback();
+        console.log(e)
         return res.status(500).json({status:'Error', message: e.message})
     }
 }
@@ -182,6 +164,58 @@ exports.imageUpload = (req,res) => {
     }
 
     return res.status(500).json('not a file')
+}
+
+exports.addUserToGroup = async(req, res) => {
+    try {
+        const {chatId, userId} = req.body
+
+        const chat = await Chat.findOne({
+            where: {
+                id: chatId
+            },
+            include: [
+                {
+                    model: User,
+                },
+                {
+                    model: Message,
+                    include :[
+                        {
+                            model: User
+                        }
+                    ],
+                    limit: 20,
+                    order : [['id', 'DESC']]
+                }
+            ]
+        })
+
+        chat.Users.forEach(user => {
+            if (user.id === userId) {
+                return res.status(403).json({message: 'User already in the group'})
+            }
+        })
+
+        await ChatUser.create({chatId,userId})
+
+        const newChatter = await User.findOne({
+            where: {
+                id: userId
+            }
+        })
+
+        if (chat.type === "dual") {
+            chat.type = 'group'
+            chat.save()
+        }
+
+        return res.json(chat,newChatter)
+
+
+    }catch (e) {
+        return res.status(500).json({status:'Error', message: e.message})
+    }
 }
 
 exports.deleteChat = async (req, res) => {
