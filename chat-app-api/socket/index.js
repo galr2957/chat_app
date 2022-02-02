@@ -171,6 +171,51 @@ const SocketServer = (server) => {
             }
         }) 
         
+        socket.on('add-user-to-group', ({chat, newChatter}) => {
+            if(users.has(newChatter.id)) {
+                newChatter.status = 'online'
+            }
+
+            chat.users.forEach((user, index) => {
+                if(users.has(user.id)) {
+                    chat.users[index].status = 'online'
+                    users.get(user.id).sockets.forEach(socket => {
+                        try{ console.log('emit')
+                            io.to(socket).emit('added-user-to-group', {chat, chatters: [newChatter]})
+                        } catch (e) { 
+
+                        }
+                    })
+                }
+            })
+            if (users.has(newChatter.id)) {
+                users.get(newChatter.id).sockets.forEach(socket => {
+                    try{ console.log('emit2')
+                        io.to(socket).emit('added-user-to-group', {chat, chatters: chat.Users})
+                    } catch (e) {
+                       
+                    }
+                })
+            }
+        }) 
+
+        socket.on('leave-current-chat',(data) => {
+
+            const {chatId, userId, currentUserId, notifyUsers} = data
+
+            notifyUsers.forEach(id => {
+                if (users.has(id)) {
+                    users.get(id).sockets.forEach(socket => {
+                        try{
+                            io.to(socket).emit('remove-user-from-chat', {chatId, userId, currentUserId})
+                        }
+                        catch (e) {
+                            console.log(e)
+                        }
+                    })
+                }
+            })
+        })
 
     })
 }

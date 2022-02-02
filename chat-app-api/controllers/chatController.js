@@ -191,7 +191,9 @@ exports.addUserToGroup = async(req, res) => {
             ]
         })
 
-        chat.Users.forEach(user => {
+        chat.Messages.reverse()
+
+        chat.users.forEach(user => {
             if (user.id === userId) {
                 return res.status(403).json({message: 'User already in the group'})
             }
@@ -210,11 +212,11 @@ exports.addUserToGroup = async(req, res) => {
             chat.save()
         }
 
-        return res.json(chat,newChatter)
+        return res.json({chat, newChatter})
 
 
-    }catch (e) {
-        return res.status(500).json({status:'Error', message: e.message})
+    }catch (e) { console.log(e)
+        // /return res.status(500).json({status:'Error', message: e.message})
     }
 }
 
@@ -237,4 +239,52 @@ exports.deleteChat = async (req, res) => {
         return res.status(500).json({status: 'Error', message: `can't delete chat ${req.params.id}`})
 
     }
+}
+
+exports.leaveCurrentChat = async(req, res) => {
+    try {
+        const {chatId} = req.body
+    const chat = await Chat.findOne({
+        where : {
+            id: chatId
+        },
+        include: [
+            {
+                model: User
+            }
+        ]
+
+    })
+    if (chat.users.length === 2) {
+        return res.status(403).json({status: "error", message: "you cannot leave this chat"})
+    }
+    if (chat.users.length === 3) {
+        chat.type = 'dual'
+        chat.save()
+    }
+
+    await ChatUser.destroy({
+        where: {
+            chatId,
+            userId: req.user.id
+        }
+    })
+
+    await Message.destroy({
+        where : {
+            chatId,
+            fromUserId: req.user.id
+        }
+    })
+
+    const notifyUsers = chat.users.map(user => user.id)
+
+    return res.json({chatId: chat.id, userId: req.user.id, currentUserId: req.user.id, notifyUsers})
+
+
+    }
+    catch (e) {
+        return res.status(500).json({status: "error", message: e.message})
+    }
+
 }
