@@ -1,7 +1,6 @@
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
 import SocketIOClient from 'socket.io-client'
-import { receviedMwssage, fetchChats, onlineFriend, onlineFriends, offlineFriend, setSocket} from '../../../store/actions/chat'
+import { addUserToGroup, createChat, senderTyping, receviedMwssage, fetchChats, onlineFriend, onlineFriends, offlineFriend, setSocket} from '../../../store/actions/chat'
 
 function useSocket (user, dispatch) {
     useEffect(() => {
@@ -14,8 +13,8 @@ function useSocket (user, dispatch) {
 
                 socket.emit('join', user)
 
-                socket.on('typing', (user) => {
-                    console.log('event' , user)
+                socket.on('typing', (sender) => {
+                    senderTyping(dispatch, sender)
                 })
 
                 socket.on('friends', (friends) => {
@@ -35,6 +34,16 @@ function useSocket (user, dispatch) {
 
                 socket.on('received', (message) => {
                     receviedMwssage(dispatch, message, user.id)
+                })
+
+                socket.on('new-chat', (chat) => {
+                    console.log('new chat ' , chat)
+                    createChat(dispatch, chat)
+                })
+
+                socket.on('added-user-to-group', (group) => {
+                    console.log('group ' , group)
+                    addUserToGroup(dispatch, group)
                 })
 
             })

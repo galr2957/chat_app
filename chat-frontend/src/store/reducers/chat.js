@@ -1,4 +1,14 @@
-import { RECEVIED_MESSAGE, FETCH_CHATS, SET_CURRENT_CHAT, FRIENDS_ONLINE, FRIEND_ONLINE, FRIEND_OFFLINE, SET_SOCKET } from "../actions/chat";
+import { INCREMENT_SCROLL, 
+        CREATE_CHAT,
+        PAGINATE_MESSAGES, 
+        SENDER_TYPING, 
+        RECEVIED_MESSAGE, 
+        FETCH_CHATS, 
+        SET_CURRENT_CHAT, 
+        FRIENDS_ONLINE, 
+        FRIEND_ONLINE, 
+        FRIEND_OFFLINE, 
+        SET_SOCKET, ADD_USER_TO_GROUP } from "../actions/chat";
 
 
 const initialState = {
@@ -6,7 +16,8 @@ const initialState = {
     currentChat: {},
     socket : {},
     newMessage: {chatId: null, seen: null},
-    scrollBottom: 0
+    scrollBottom: 0,
+    senderTyping: {typing: false}
 }
 
 const chatReducer = (state = initialState, action) => {
@@ -122,7 +133,7 @@ const chatReducer = (state = initialState, action) => {
             const {userId, message} = payload
             let currentChatCopy = { ...state.currentChat }
             let newMessage = {...state.newMessage}
-            let scrollBottom = state.scrollnottom
+            let scrollBottom = state.scrollBottom
 
             const chatCopy = state.chats.map(chat => {
                 if (message.chatId === chat.id) {
@@ -156,7 +167,8 @@ const chatReducer = (state = initialState, action) => {
                     ...state,
                     chats: chatCopy,
                     currentChat: currentChatCopy,
-                    newMessage
+                    newMessage,
+                    senderTyping: {typing: false}
                 }
             }
             return {
@@ -164,10 +176,106 @@ const chatReducer = (state = initialState, action) => {
                 chats: chatCopy,
                 currentChat: currentChatCopy,
                 newMessage,
-                scrollBottom
+                scrollBottom,
+                senderTyping: {typing: false}
             }
 
         }
+        
+        case SENDER_TYPING : {
+            if(payload.typing) {
+                return {
+                    ...state,
+                    senderTyping: payload,
+                    scrollBottom: state.scrollBottom +1
+                }
+            }
+            return {
+                ...state,
+                senderTyping: payload,
+            }
+        }
+
+        case PAGINATE_MESSAGES: {
+            const {messages, id, pagination} = payload
+
+            let currentChatCopy = {...state.currentChat}
+
+            const chatCopy = state.chats.map(chat => {
+                if (chat.id === id) {
+                    const shifted = [...messages, ...chat.Messages]
+
+                    currentChatCopy = {
+                        ...currentChatCopy,
+                        Messages : shifted,
+                        pagination: pagination
+                    }
+
+                    return {
+                        ...chat,
+                        Messages: shifted,
+                        pagination: pagination
+                    }
+                }
+                return chat
+            })
+            return {
+                ...state,
+                chats : chatCopy,
+                currentChat : currentChatCopy
+            }
+            
+        }
+
+        case INCREMENT_SCROLL:
+            return {
+                ...state,
+                scrollBottom : state.scrollBottom +1,
+                newMessage: {chatId: null, seen: true}
+            }
+        
+        case CREATE_CHAT:
+            return {
+                ...state,
+                chats: [...state.chats, ...[payload]]
+            } 
+
+        case ADD_USER_TO_GROUP:
+            const {chat,chatters} = payload
+
+            let exists = false
+
+            const chatCopy = state.chats.map(chatstate => {
+                if (chat.id === chatstate.id) {
+                    exists = true
+                    return {
+                        ...chatstate,
+                        users: [...chatstate.users, ...chatters]
+                    }
+                }
+                return chatstate
+            })
+            if (!exists) {
+                chatCopy.push(chat)
+            }
+            let currentChatCopy = {...state.currentChat}
+
+            if (Object.keys(currentChatCopy).length > 0) {
+                if (chat.id === currentChatCopy.id) {
+                    currentChatCopy = {
+                        ...state.currentChat,
+                        users: [
+                            ...state.currentChat.users,
+                            ...chatters
+                        ]
+                    }
+                }
+            }
+            return{
+                ...state,
+                chats: chatCopy,
+                currentChat: currentChatCopy
+            }
 
         default : {
             return state

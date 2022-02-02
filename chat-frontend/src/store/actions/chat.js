@@ -6,6 +6,11 @@ export const FRIEND_ONLINE = 'FRIEND_ONLINE'
 export const FRIEND_OFFLINE = 'FRIEND_OFFLINE'
 export const SET_SOCKET = 'SET_SOCKET'
 export const RECEVIED_MESSAGE = 'RECEVIED_MESSAGE'
+export const SENDER_TYPING = 'SENDER_TYPING'
+export const PAGINATE_MESSAGES = 'PAGINATE_MESSAGES'
+export const INCREMENT_SCROLL = "INCREMENT_SCROLL"
+export const CREATE_CHAT = "CREATE_CHAT"
+export const ADD_USER_TO_GROUP = "ADD_USER_TO_GROUP"
 
 export const fetchChats = (dispatch) => {
     return ChatService.fetchChats()
@@ -46,4 +51,34 @@ export const setSocket = (dispatch,socket) => {
 
 export const receviedMwssage = (dispatch,message, userId) => {
     dispatch({type: RECEVIED_MESSAGE, payload: {message, userId}})
+}
+
+export const senderTyping = (dispatch,sender) => {
+    dispatch({type: SENDER_TYPING, payload: sender})
+}
+
+export const paginateMessages = (dispatch,id,page) => {
+    return ChatService.paginateMessages(id, page)
+    .then(({messages, pagination}) => {
+        if (typeof messages !== 'undefined' && messages.length > 0) {
+            messages.reverse()
+            const payload = {messages, id, pagination}
+            dispatch({type: PAGINATE_MESSAGES, payload})
+            return true
+        }
+        return false
+    })
+    .catch (err => {throw err})
+}
+
+export const incrementScroll = (dispatch) => {
+    dispatch({type: INCREMENT_SCROLL})
+}
+
+export const createChat = (dispatch,chat) => {
+    dispatch({type: CREATE_CHAT, payload: chat})
+}
+
+export const addUserToGroup = (dispatch, group) => {
+    dispatch({type: ADD_USER_TO_GROUP, payload: group})
 }
