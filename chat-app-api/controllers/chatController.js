@@ -222,19 +222,21 @@ exports.addUserToGroup = async(req, res) => {
 
 exports.deleteChat = async (req, res) => {
     try {
-        if (!await Chat.findOne ({
+         const chat = await Chat.findOne ({
             where: {
                 id: req.params.id
-            }
-           })) {
-                throw 'chat not found' }
-        await Chat.destroy ({
-            where: {
-                id: req.params.id
-            }
-        })
+            },
+            include : [
+                {
+                    model: User
+                }
+            ]
+           })
+           const notifyUsers = chat.users.map(user => user.id)
+        
+           await chat.destroy()
 
-        return res.json({status: 'succes', message: `chat ${req.params.id} was deleted :(`})
+        return res.json({chatId: req.params.id, notifyUsers})
     } catch (e) {
         return res.status(500).json({status: 'Error', message: `can't delete chat ${req.params.id}`})
 

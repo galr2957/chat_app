@@ -146,12 +146,9 @@ const SocketServer = (server) => {
         })
 
         socket.on('add-friend', (chats) => {
-            console.log(users)
-            console.log(chats[0].users[0].id)
             try{
                 let online = 'offline'
                 if(users.has(chats[0].users[0].id)) {
-                    console.log("reciver",chats[1])
                     online = 'online'
                     chats[1].users[0].status = 'online'
                     users.get(chats[0].users[0].id).sockets.forEach(socket => {
@@ -159,7 +156,6 @@ const SocketServer = (server) => {
                     })
                 }
                 if(users.has(chats[1].users[0].id)) {
-                    console.log("creator",chats[0])
                     chats[0].users[0].status = online
                     users.get(chats[1].users[0].id).sockets.forEach(socket => {
                         io.to(socket).emit('new-chat', chats[0])
@@ -180,7 +176,7 @@ const SocketServer = (server) => {
                 if(users.has(user.id)) {
                     chat.users[index].status = 'online'
                     users.get(user.id).sockets.forEach(socket => {
-                        try{ console.log('emit')
+                        try{ 
                             io.to(socket).emit('added-user-to-group', {chat, chatters: [newChatter]})
                         } catch (e) { 
 
@@ -190,7 +186,7 @@ const SocketServer = (server) => {
             })
             if (users.has(newChatter.id)) {
                 users.get(newChatter.id).sockets.forEach(socket => {
-                    try{ console.log('emit2')
+                    try{ 
                         io.to(socket).emit('added-user-to-group', {chat, chatters: chat.Users})
                     } catch (e) {
                        
@@ -208,6 +204,23 @@ const SocketServer = (server) => {
                     users.get(id).sockets.forEach(socket => {
                         try{
                             io.to(socket).emit('remove-user-from-chat', {chatId, userId, currentUserId})
+                        }
+                        catch (e) {
+                            console.log(e)
+                        }
+                    })
+                }
+            })
+        })
+
+        socket.on('delete-chat', (data) => {
+            const {chatId, notifyUsers} = data
+
+            notifyUsers.forEach(id => {
+                if (users.has(id)) {
+                    users.get(id).sockets.forEach(socket => {
+                        try {
+                            io.to(socket).emit("delete-chat", parseInt(chatId))
                         }
                         catch (e) {
                             console.log(e)
