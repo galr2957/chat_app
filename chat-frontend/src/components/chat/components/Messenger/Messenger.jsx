@@ -22,7 +22,7 @@ const Messenger = () => {
                         <MessageBox chat={chat}/>
                         <MessageInput chat={chat}/>
                     </div>
-                    : <p> no active chats</p>
+                    : <p> open an <b>existing chat</b> or add <b> friends </b> to chat with</p>
             }
         </div>
     )

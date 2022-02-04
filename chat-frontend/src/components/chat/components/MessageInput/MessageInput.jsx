@@ -154,7 +154,7 @@ const MessageInput = ({chat}) => {
                 <input
                     ref={msgInput}
                     type='text'
-                    placeholder = {message}
+                    placeholder = 'message...'
                     value={message}
                     onChange={e => handleMessage(e)}
                     onKeyDown={e => handleKeyDown(e, false)}

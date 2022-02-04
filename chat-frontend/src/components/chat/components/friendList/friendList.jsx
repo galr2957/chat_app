@@ -65,7 +65,7 @@ const FriendList = () => {
                         </p>
                         <input  onChange={e => searchFriends(e)} 
                                 type='text' 
-                                placrholder='search...'/>
+                                placeholder='search...'/>
                         <div id="suggestions">
                             {
                                 suggestions.map(user=> {

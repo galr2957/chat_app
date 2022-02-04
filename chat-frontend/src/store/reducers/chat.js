@@ -8,7 +8,9 @@ import { INCREMENT_SCROLL,
         FRIENDS_ONLINE, 
         FRIEND_ONLINE, 
         FRIEND_OFFLINE, 
-        SET_SOCKET, ADD_USER_TO_GROUP } from "../actions/chat";
+        SET_SOCKET, ADD_USER_TO_GROUP,
+        LEAVE_CURRENT_CHAT,
+        DELETE_CHAT } from "../actions/chat";
 
 
 const initialState = {
@@ -250,7 +252,8 @@ const chatReducer = (state = initialState, action) => {
                     exists = true
                     return {
                         ...chatstate,
-                        users: [...chatstate.users, ...chatters]
+                        users: [...chatstate.users, ...chatters],
+                        type: chat.type
                     }
                 }
                 return chatstate
@@ -276,6 +279,53 @@ const chatReducer = (state = initialState, action) => {
                 chats: chatCopy,
                 currentChat: currentChatCopy
             }
+        
+        case LEAVE_CURRENT_CHAT: {
+            const {chatId, userId,currentUserId} = payload
+
+            if (userId === currentUserId) {
+                const chatsCopy = state.chats.filter(chat=> chat.id !== chatId)
+
+                return {
+                    ...state,
+                    chats: chatsCopy,
+                    currentChat: state.currentChat.id === chatId ? {} : state.currentChat
+                }
+            } else {
+                const chatsCopy = state.chats.map( chat => {
+                    if (chatId === chat.id) {
+                        return{
+                            ...chat,
+                            users: chat.users.filter(user => user.id !== userId)
+                        }
+                    }
+
+                    return chat
+                })
+
+                let currentChatCopy = {...state.currentChat}
+                if (currentChatCopy.id === chatId) {
+                    currentChatCopy = {
+                        ...currentChatCopy,
+                        users: currentChatCopy.users.filter(user => user.id !== userId)
+                    }
+                }
+                return {
+                    ...state,
+                    chats: chatsCopy,
+                    currentChat: currentChatCopy
+            }
+            }
+        }
+
+        case DELETE_CHAT: {
+            return{
+                ...state,
+                chats: state.chats.filter(chat => chat.id !== payload),
+                currentChat: state.currentChat.id === payload? {} : state.currentChat
+            }
+        }
+            
 
         default : {
             return state

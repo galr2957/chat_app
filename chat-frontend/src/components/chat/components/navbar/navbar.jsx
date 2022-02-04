@@ -12,7 +12,7 @@ const Navbar = () => {
     const dispatch = useDispatch()
 
     const [showProfileMenu, setShowProfileMenu] = useState(false)
-    const [showProfileModal, setShowProfileModal] = useState(true)
+    const [showProfileModal, setShowProfileModal] = useState(false)
 
     const [firstName, setFirstNme] = useState(user.firstName);
     const [lastName, setLastName] = useState(user.lastName);

@@ -11,6 +11,8 @@ export const PAGINATE_MESSAGES = 'PAGINATE_MESSAGES'
 export const INCREMENT_SCROLL = "INCREMENT_SCROLL"
 export const CREATE_CHAT = "CREATE_CHAT"
 export const ADD_USER_TO_GROUP = "ADD_USER_TO_GROUP"
+export const LEAVE_CURRENT_CHAT = "LEAVE_CURRENT_CHAT"
+export const DELETE_CHAT = "DELETE_CHAT"
 
 export const fetchChats = (dispatch) => {
     return ChatService.fetchChats()
@@ -81,4 +83,12 @@ export const createChat = (dispatch,chat) => {
 
 export const addUserToGroup = (dispatch, group) => {
     dispatch({type: ADD_USER_TO_GROUP, payload: group})
+}
+
+export const leaveCurrentChat = (dispatch, data) => {
+    dispatch({type: LEAVE_CURRENT_CHAT, payload: data})
+}
+
+export const deleteChat = (dispatch, chatId) => {
+    dispatch({type: DELETE_CHAT, payload: chatId})
 }

@@ -1,4 +1,4 @@
-import React, {Fragment, useState} from "react";
+import React, {Fragment, useEffect, useState} from "react";
 import './ChatHeader.scss'
 import {userStatus} from '../../../../utils/helpers'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -8,10 +8,10 @@ import Modal from '../../../modal/modal'
 
 const ChatHeader = ({chat}) => {
 
+    useEffect(() => setshowChatOptiones(false) , [chat])
+
     const [showChatOptiones, setshowChatOptiones] = useState(false)
     const [showAddFriendModal, setshowAddFriendModal] = useState(false)
-    const [showLeaveChatModal, setshowLeaveChatModal] = useState(false)
-    const [showDeleteChatModal, setshowDeleteChatModal] = useState(false)
     const [suggestions, setsuggestions] = useState([])
 
     const socket = useSelector(state => state.chatReducer.socket)
@@ -37,6 +37,13 @@ const ChatHeader = ({chat}) => {
             socket.emit('leave-current-chat', data)
         })
         .catch( err => console.log(err))
+    }
+
+    const deleteChat = () => {
+        ChatService.deleteCurrentChat(chat.id)
+        .then(data => {
+            socket.emit('delete-chat', data)
+        })
     }
 
 
@@ -69,17 +76,20 @@ const ChatHeader = ({chat}) => {
                     </div>
                     {
                        chat.type ==="group"
-                            ?  <div onClick={leaveChat()}>
+                            ?  <div onClick={() => leaveChat()}>
                                 <FontAwesomeIcon icon= {['fas', 'sign-out-alt']} className="fa-icon"/>
                                 <p> Leave chat </p>
                                 </div>
                             : null
                     }
                     
-                    <div>
+                    {
+                        chat.type === 'dual' &&
+                        <div onClick={() => deleteChat()}>
                         <FontAwesomeIcon icon= {['fas', 'trash']} className="fa-icon"/>
                         <p> Delete chat </p>
                     </div>
+                    }
                   </div>
                 :   null
             }
@@ -98,7 +108,7 @@ const ChatHeader = ({chat}) => {
                         </p>
                         <input  onChange={e => searchFriends(e)} 
                                 type='text' 
-                                placrholder='search...'/>
+                                placeholder='search...'/>
                         <div id="suggestions">
                             {
                                 suggestions.map(user=> {
