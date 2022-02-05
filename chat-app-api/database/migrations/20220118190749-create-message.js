@@ -22,7 +22,7 @@ module.exports = {
           model: 'Chats', 
           Key: 'id'
         },
-        onDelet : 'CASCADE'
+        onDelete : 'CASCADE'
       },
       fromUserId: {
         type: Sequelize.INTEGER,
@@ -31,7 +31,7 @@ module.exports = {
           model: 'users', 
           Key: 'id'
         },
-        onDelet : 'CASCADE'
+        onDelete : 'CASCADE'
       },
       createdAt: {
         allowNull: false,

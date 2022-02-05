@@ -3,7 +3,7 @@ import store from "../store";
 import { Logout } from "../store/actions/auth";
 
 const API = axios.create({
-    baseURL: 'http://127.0.0.1:3000',
+    baseURL: 'https://gals-chat-app-api.herokuapp.com',
     headers : {
         'Accept' : 'application/Json',
         'Authorization' : `bearer ${localStorage.getItem('token') || ''}`

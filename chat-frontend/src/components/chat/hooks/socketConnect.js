@@ -7,7 +7,7 @@ function useSocket (user, dispatch) {
         fetchChats(dispatch)
             .then(res => {
 
-                const socket = SocketIOClient.connect('http://127.0.0.1:3000')
+                const socket = SocketIOClient.connect('https://gals-chat-app-api.herokuapp.com')
 
                 setSocket(dispatch, socket)
 
