@@ -11,7 +11,7 @@ import 'emoji-mart/css/emoji-mart.css'
 const MessageInput = ({chat}) => {
     const dispatch = useDispatch()
 
-    const [message, setMessage] = useState('massage...')
+    const [message, setMessage] = useState('')
     const [Image, setImage] = useState('')
     const [showEmojiPicker,setshowEmojiPicker] = useState(false)
     const user = useSelector(state => state.authReducer.user)

@@ -40,7 +40,7 @@ const Navbar = () => {
         <div id="navbar" className="card-shadow">
             <h2> chat.io</h2>
             <div onClick ={() => setShowProfileMenu(!showProfileMenu)} id='profile-menu'>
-                <img height="40" width="40"  src = {`http://${user.avatar}`} alt='avatar'/>
+                <img height="40" width="40"  src = {`${user.avatar}`} alt='avatar'/>
                 <p> {user.firstName}</p>
                 <FontAwesomeIcon icon= 'caret-down' className="fa-icon"/>
                 

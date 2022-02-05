@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       get : function() {
         const avatar = this.getDataValue('avatar')
-        const url = `${config.app_url}:${config.app_port}`
+        const url = `${config.app_url}`
 
         if (avatar.split('-')[0] == 'avatar') {
           const id = this.getDataValue('id')

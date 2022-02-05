@@ -35,17 +35,17 @@ exports.login = async (req,res) => {
         const userWithToken = generatToken(userinfo.dataValues);
 
         if (userWithToken.avatar.split('-')[0] == 'avatar') {
-            const url = `${config.app_url}:${config.app_port}`
-            const avatarFileName = userWithToken.avatar
+            const url = `${config.app_url}`
+            const FileName = userWithToken.avatar
             const id = userWithToken.id
 
-            userWithToken.avatar = `${url}/user/${id}/${avatarFileName}`
+            userWithToken.avatar = `${url}/user/${id}/${FileName}`
         }
 
         return res.send(userWithToken);
 
     } catch (e) {
-        return res.status(500).json({message : 'wrong email and/or password'})
+        return res.status(500).json({message : e, "error" : e})
         
     }
 }
@@ -54,7 +54,7 @@ exports.register = async (req,res) => {
 
     try {
         const userData = req.body
-        userData.avatar = `${config.app_url}:${config.app_port}/${userData.gender}.svg`
+        userData.avatar = `${config.app_url}/${userData.gender.toLowerCase()}.svg`
         const userinfo = await user.create(userData)
         const userWithToken = await generatToken(userinfo.dataValues);
         return res.send(userWithToken);

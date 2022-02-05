@@ -244,6 +244,7 @@ const chatReducer = (state = initialState, action) => {
 
         case ADD_USER_TO_GROUP:
             const {chat,chatters} = payload
+            
 
             let exists = false
 
@@ -253,7 +254,7 @@ const chatReducer = (state = initialState, action) => {
                     return {
                         ...chatstate,
                         users: [...chatstate.users, ...chatters],
-                        type: chat.type
+                        type: 'group'
                     }
                 }
                 return chatstate
@@ -270,7 +271,8 @@ const chatReducer = (state = initialState, action) => {
                         users: [
                             ...state.currentChat.users,
                             ...chatters
-                        ]
+                        ],
+                        type: 'group'
                     }
                 }
             }

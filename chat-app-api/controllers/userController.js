@@ -31,7 +31,7 @@ exports.update = async (req, res) => {
             const newUserinfo = result[0]
             
             if (newUserinfo.dataValues.avatar.split('-')[0] == 'avatar') {
-                const url = `${config.app_url}:${config.app_port}`
+                const url = `${config.app_url}`
                 const avatarFileName = newUserinfo.dataValues.avatar
                 const id = newUserinfo.dataValues.id
 
@@ -42,9 +42,8 @@ exports.update = async (req, res) => {
             return res.send(newUserinfo.dataValues)
 
     } catch (e) {
-        return res.status(500)
+        return res.status(500).json({'message' : e})
     }
-    return res.send("update")
 }
 
 exports.search = async (req, res) => {
