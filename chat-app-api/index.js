@@ -24,5 +24,4 @@ SocketServer(server)
 
 server.listen(port , () => {
     console.log(`listening on ${port} port`)
-    console.log(` on ${config.app_url} port`)
 })
