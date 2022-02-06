@@ -27,7 +27,6 @@ exports.login = async (req,res) => {
 
         //check password match
         if (!bcrypt.compareSync(password, userinfo.password)) {
-            console.log('wrong password');
             return res.status(401).json({error : 'wrong password!'}) 
         }
 
