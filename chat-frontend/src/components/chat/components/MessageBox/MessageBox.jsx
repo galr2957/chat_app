@@ -75,7 +75,7 @@ const MessageBox = ({chat}) => {
             }
             {
                 chat.Messages.map((message, index) => {
-                    return <Message chat={chat} message={message} index={index} user={user} key={message.id}/>
+                    return <Message chat={chat} message={message} index={index} user={user} key={index}/>
                 })
             }
             {

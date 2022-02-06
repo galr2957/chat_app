@@ -71,7 +71,7 @@ const MessageInput = ({chat}) => {
 
     const handleImageUpload = () => {
         const formData = new FormData()
-        formData.append('id', chat.id)
+        formData.append('id', user.id)
         formData.append('image', Image)
         
 

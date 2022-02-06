@@ -3,11 +3,17 @@ import API from './api';
 const AuthServices = {
     login: (data) => {
         return API.post('/login', data)
-               .then(({data}) => {
-               setHeadersAndStorage(data, data.token)
-                    return data
+               .then((res) => {
+                    const {data} = res
+                    if (data.token) {
+                         setHeadersAndStorage(data, data.token)
+                         return data
+                    } else {
+                         throw ('wrong cradentials')
+                    }  
                })
-               .catch(err => {console.log('auth service err', err); 
+               .catch(err => { 
+                    alert('wrong email and/or password') 
                     throw err
                })
     },
@@ -17,7 +23,7 @@ const AuthServices = {
                setHeadersAndStorage(data, data.token)
                  return data
             })
-            .catch(err => {console.log('auth service err', err); 
+            .catch(err => {console.log('auth ser err'); 
                  throw err
             })
      },
@@ -30,7 +36,7 @@ const AuthServices = {
                     localStorage.setItem('user' , JSON.stringify(data) )
                       return data
                  })
-                 .catch(err => {console.log('auth service err', err); 
+                 .catch(err => {console.log('', err); 
                       throw err
                  })
      },
